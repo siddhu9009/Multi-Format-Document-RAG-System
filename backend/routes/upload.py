@@ -14,6 +14,7 @@ from services.document_processing_service import process_document
 from services.embedding_service import create_embeddings
 from services.vector_store import store_chunks
 from services.auth_dependency import get_current_user
+from services.access_service import verify_conversation_access
 
 
 router = APIRouter()
@@ -29,6 +30,16 @@ async def upload_document(
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user)
 ):
+
+    # Verify that the conversation belongs to the logged-in user
+    if not verify_conversation_access(
+        conversation_id=conversation_id,
+        user_id=current_user["user_id"]
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have access to this conversation"
+        )
 
     allowed_types = [".pdf", ".docx"]
 
@@ -91,3 +102,4 @@ async def upload_document(
             status_code=500,
             detail=f"Document processing failed: {str(e)}"
         )
+
