@@ -1,19 +1,34 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+
+from fastapi import (
+    APIRouter,
+    UploadFile,
+    File,
+    HTTPException,
+    Depends
+)
+
 from pathlib import Path
+from uuid import uuid4
 
 from services.document_processing_service import process_document
 from services.embedding_service import create_embeddings
 from services.vector_store import store_chunks
+from services.auth_dependency import get_current_user
 
 
 router = APIRouter()
+
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 
 @router.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(
+    conversation_id: str,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
 
     allowed_types = [".pdf", ".docx"]
 
@@ -25,8 +40,11 @@ async def upload_document(file: UploadFile = File(...)):
             detail="Only PDF and DOCX files are supported"
         )
 
-    # Keep only the filename, not any possible path
+    # Keep only the filename
     filename = Path(file.filename).name
+
+    # Create unique document ID
+    document_id = str(uuid4())
 
     file_path = UPLOAD_DIR / filename
 
@@ -34,24 +52,34 @@ async def upload_document(file: UploadFile = File(...)):
 
         # 1. Save uploaded file
         with open(file_path, "wb") as buffer:
+
             content = await file.read()
+
             buffer.write(content)
 
         # 2. Extract text and create chunks
-        chunks = process_document(str(file_path))
+        chunks = process_document(
+            str(file_path)
+        )
 
         # 3. Create embeddings
-        embeddings = create_embeddings(chunks)
+        embeddings = create_embeddings(
+            chunks
+        )
 
         # 4. Store chunks + embeddings in MongoDB
         stored_count = store_chunks(
-            filename,
-            chunks,
-            embeddings
+            user_id=current_user["user_id"],
+            conversation_id=conversation_id,
+            document_id=document_id,
+            document_name=filename,
+            chunks=chunks,
+            embeddings=embeddings
         )
 
         return {
             "message": "Document processed successfully",
+            "document_id": document_id,
             "filename": filename,
             "chunks": len(chunks),
             "stored_chunks": stored_count
