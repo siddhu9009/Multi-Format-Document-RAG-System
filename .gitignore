@@ -1,3 +1,4 @@
+```gitignore
 # Environment variables
 .env
 .env.*
@@ -14,6 +15,9 @@ venv/
 # Uploaded documents
 backend/uploads/*
 
+# Node
+node_modules/
+
 # IDE
 .vscode/
 .idea/
@@ -21,3 +25,4 @@ backend/uploads/*
 # OS
 .DS_Store
 Thumbs.db
+```
