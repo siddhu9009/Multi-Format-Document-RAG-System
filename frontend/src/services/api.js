@@ -208,3 +208,29 @@ export async function sendChatMessage(
 
   return data;
 }
+
+
+export async function getDocuments() {
+  const token = localStorage.getItem("access_token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/documents`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Failed to load documents"
+    );
+  }
+
+  return data;
+}
+

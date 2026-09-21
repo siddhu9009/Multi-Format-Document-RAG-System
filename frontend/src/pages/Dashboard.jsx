@@ -9,6 +9,7 @@ import {
   getMessages,
   uploadDocument,
   sendChatMessage,
+  getDocuments,
 } from "../services/api";
 
 function Dashboard() {
@@ -19,6 +20,7 @@ function Dashboard() {
     useState(null);
 
   const [messages, setMessages] = useState([]);
+  const [documents, setDocuments] = useState([]);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [documentId, setDocumentId] = useState(null);
@@ -47,7 +49,18 @@ function Dashboard() {
       }
     }
 
+    async function loadDocuments() {
+      try {
+        const data = await getDocuments();
+
+        setDocuments(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    }
+
     loadConversations();
+    loadDocuments();
   }, []);
 
   async function handleNewChat() {
@@ -76,9 +89,22 @@ function Dashboard() {
     try {
       setError("");
       setUploadMessage("");
-      setDocumentId(null);
       setSelectedFile(null);
       setQuestion("");
+
+      const conversationDocument = documents.find(
+        (document) =>
+          document.conversation_id ===
+          conversation.conversation_id
+      );
+
+      if (conversationDocument) {
+        setDocumentId(
+          conversationDocument.document_id
+        );
+      } else {
+        setDocumentId(null);
+      }
 
       setSelectedConversation(conversation);
       setMessagesLoading(true);
@@ -132,6 +158,16 @@ function Dashboard() {
       );
 
       setDocumentId(data.document_id);
+
+      setDocuments((previous) => [
+        ...previous,
+        {
+          document_id: data.document_id,
+          document_name: data.filename,
+          conversation_id:
+            selectedConversation.conversation_id,
+        },
+      ]);
 
       setUploadMessage(
         `${data.filename} uploaded successfully.`
@@ -331,7 +367,9 @@ function Dashboard() {
                       handleSendMessage();
                     }
                   }}
-                  disabled={sending || !documentId}
+                  disabled={
+                    sending || !documentId
+                  }
                 />
 
                 <button
@@ -342,7 +380,9 @@ function Dashboard() {
                     !question.trim()
                   }
                 >
-                  {sending ? "Thinking..." : "Send"}
+                  {sending
+                    ? "Thinking..."
+                    : "Send"}
                 </button>
               </div>
             </>
