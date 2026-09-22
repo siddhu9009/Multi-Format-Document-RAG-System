@@ -223,136 +223,230 @@ function Dashboard() {
   }
 
   return (
-    <div>
-      <header>
+    <div className="dashboard">
+
+      {/* Header */}
+      <header className="dashboard-header">
         <h1>AI Document Assistant</h1>
 
-        <div>
-          <span>
+        <div className="user-section">
+          <span className="user-name">
             Welcome, {user.username}
           </span>
 
-          <button onClick={logout}>
+          <button
+            className="logout-button"
+            onClick={logout}
+          >
             Logout
           </button>
         </div>
       </header>
 
-      <main>
-        <aside>
-          <h2>Conversations</h2>
+      {/* Main Layout */}
+      <main className="dashboard-main">
 
-          <button onClick={handleNewChat}>
+        {/* Sidebar */}
+        <aside className="conversation-sidebar">
+
+          <h2 className="sidebar-title">
+            Conversations
+          </h2>
+
+          <button
+            className="new-chat-button"
+            onClick={handleNewChat}
+          >
             + New Chat
           </button>
 
-          {loading && (
-            <p>Loading conversations...</p>
-          )}
+          <div className="conversation-list">
 
-          {!loading &&
-            conversations.length === 0 && (
-              <p>No conversations yet.</p>
+            {loading && (
+              <p className="empty-state">
+                Loading conversations...
+              </p>
             )}
 
-          {conversations.map((conversation) => (
-            <div
-              key={conversation.conversation_id}
-              onClick={() =>
-                handleSelectConversation(conversation)
-              }
-            >
-              <p>{conversation.title}</p>
-            </div>
-          ))}
+            {!loading &&
+              conversations.length === 0 && (
+                <p className="empty-state">
+                  No conversations yet.
+                </p>
+              )}
+
+            {conversations.map((conversation) => (
+              <div
+                key={conversation.conversation_id}
+                className={`conversation-item ${
+                  selectedConversation?.conversation_id ===
+                  conversation.conversation_id
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  handleSelectConversation(conversation)
+                }
+              >
+                <p>{conversation.title}</p>
+              </div>
+            ))}
+
+          </div>
         </aside>
 
-        <section>
-          <h2>Chat</h2>
+        {/* Chat Area */}
+        <section className="chat-section">
 
-          {error && (
-            <p>{error}</p>
-          )}
-
-          {!selectedConversation && (
-            <p>
-              Select a conversation or create a new chat.
-            </p>
-          )}
-
-          {selectedConversation && (
+          {!selectedConversation ? (
             <>
-              <h3>
-                {selectedConversation.title}
-              </h3>
+              <div className="chat-header">
+                <h2>Chat</h2>
+              </div>
 
-              <div>
-                <h4>Document</h4>
+              <div className="empty-state">
+                <p>
+                  Select a conversation or create a new chat.
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Chat Header */}
+              <div className="chat-header">
+                <h2>
+                  {selectedConversation.title}
+                </h2>
+              </div>
 
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  onChange={handleFileChange}
-                />
+              {/* Error */}
+              {error && (
+                <p className="error-message">
+                  {error}
+                </p>
+              )}
 
-                {selectedFile && (
-                  <p>
-                    Selected: {selectedFile.name}
+              {/* Messages */}
+              <div className="messages-container">
+
+                {messagesLoading && (
+                  <p className="empty-state">
+                    Loading messages...
                   </p>
                 )}
 
-                <button
-                  onClick={handleUpload}
-                  disabled={uploading}
-                >
-                  {uploading
-                    ? "Uploading..."
-                    : "Upload Document"}
-                </button>
+                {!messagesLoading &&
+                  messages.length === 0 && (
+                    <p className="empty-state">
+                      No messages in this conversation yet.
+                    </p>
+                  )}
+
+                {!messagesLoading &&
+                  messages.map((message) => (
+                    <div
+                      key={message.message_id}
+                      className={`message ${
+                        message.role === "user"
+                          ? "message-user"
+                          : "message-assistant"
+                      }`}
+                    >
+                      <div className="message-role">
+                        {message.role === "user"
+                          ? "You"
+                          : "AI Assistant"}
+                      </div>
+
+                      <p className="message-content">
+                        {message.content}
+                      </p>
+                    </div>
+                  ))}
+
+              </div>
+
+              {/* Document Upload */}
+              <div className="document-section">
+
+                <div className="document-header">
+                  <div>
+                    <h3>Upload Document</h3>
+
+                    <p>
+                      Upload a PDF or DOCX to start asking
+                      questions.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="document-upload-card">
+
+                  <label className="file-drop-area">
+
+                    <input
+                      type="file"
+                      accept=".pdf,.docx"
+                      onChange={handleFileChange}
+                    />
+
+                    <div className="upload-icon">
+                      📄
+                    </div>
+
+                    <div className="upload-text">
+
+                      <span className="upload-title">
+                        {selectedFile
+                          ? selectedFile.name
+                          : "Choose a document"}
+                      </span>
+
+                      <span className="upload-subtitle">
+                        {selectedFile
+                          ? "Ready to upload"
+                          : "PDF or DOCX files supported"}
+                      </span>
+
+                    </div>
+
+                    <span className="browse-button">
+                      Browse
+                    </span>
+
+                  </label>
+
+                  <button
+                    className="upload-button"
+                    onClick={handleUpload}
+                    disabled={uploading}
+                  >
+                    {uploading
+                      ? "Uploading..."
+                      : "Upload Document"}
+                  </button>
+
+                </div>
 
                 {uploadMessage && (
-                  <p>{uploadMessage}</p>
+                  <p className="document-status success-document">
+                    ✓ {uploadMessage}
+                  </p>
                 )}
 
                 {documentId && (
-                  <p>
-                    Document ready for chat.
+                  <p className="document-status ready-document">
+                    ✓ Document ready for chat
                   </p>
                 )}
+
               </div>
 
-              <hr />
+              {/* Chat Input */}
+              <div className="chat-input-area">
 
-              {messagesLoading && (
-                <p>Loading messages...</p>
-              )}
-
-              {!messagesLoading &&
-                messages.length === 0 && (
-                  <p>
-                    No messages in this conversation yet.
-                  </p>
-                )}
-
-              {!messagesLoading &&
-                messages.map((message) => (
-                  <div
-                    key={message.message_id}
-                  >
-                    <strong>
-                      {message.role}:
-                    </strong>
-
-                    <p>
-                      {message.content}
-                    </p>
-                  </div>
-                ))}
-
-              <hr />
-
-              <div>
                 <input
+                  className="chat-input"
                   type="text"
                   placeholder="Ask a question about your document..."
                   value={question}
@@ -373,6 +467,7 @@ function Dashboard() {
                 />
 
                 <button
+                  className="send-button"
                   onClick={handleSendMessage}
                   disabled={
                     sending ||
@@ -384,10 +479,13 @@ function Dashboard() {
                     ? "Thinking..."
                     : "Send"}
                 </button>
+
               </div>
             </>
           )}
+
         </section>
+
       </main>
     </div>
   );

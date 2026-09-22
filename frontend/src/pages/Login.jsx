@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
-function Login() {
+function Login({ onRegister }) {
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -26,40 +27,90 @@ function Login() {
   }
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Email</label>
+        <div className="auth-header">
+          <h1>AI Document Assistant</h1>
 
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
+          <p>
+            Login to continue to your documents and conversations.
+          </p>
         </div>
 
-        <div>
-          <label>Password</label>
+        <form
+          className="auth-form"
+          onSubmit={handleLogin}
+        >
+          <div className="form-group">
+            <label htmlFor="login-email">
+              Email
+            </label>
 
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
+            <input
+              id="login-email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="login-password">
+              Password
+            </label>
+
+            <input
+              id="login-password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          <button
+            className="auth-button"
+            type="submit"
+          >
+            Login
+          </button>
+        </form>
+
+        {message && (
+          <p className="success-message">
+            {message}
+          </p>
+        )}
+
+        {error && (
+          <p className="auth-error">
+            {error}
+          </p>
+        )}
+
+        <div className="auth-switch">
+          <span>
+            Don't have an account?
+          </span>
+
+          <button
+            type="button"
+            className="auth-link"
+            onClick={onRegister}
+          >
+            Create account
+          </button>
         </div>
 
-        <button type="submit">
-          Login
-        </button>
-      </form>
-
-      {message && <p>{message}</p>}
-
-      {error && <p>{error}</p>}
+      </div>
     </div>
   );
 }

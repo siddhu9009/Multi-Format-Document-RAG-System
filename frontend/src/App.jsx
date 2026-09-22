@@ -1,4 +1,6 @@
 
+import { useState } from "react";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -8,6 +10,8 @@ import { useAuth } from "./context/AuthContext";
 function App() {
   const { user, loading } = useAuth();
 
+  const [showRegister, setShowRegister] = useState(false);
+
   if (loading) {
     return <h1>Loading...</h1>;
   }
@@ -16,14 +20,18 @@ function App() {
     return <Dashboard />;
   }
 
+  if (showRegister) {
+    return (
+      <Register
+        onLogin={() => setShowRegister(false)}
+      />
+    );
+  }
+
   return (
-    <div>
-      <Login />
-
-      <hr />
-
-      <Register />
-    </div>
+    <Login
+      onRegister={() => setShowRegister(true)}
+    />
   );
 }
 
