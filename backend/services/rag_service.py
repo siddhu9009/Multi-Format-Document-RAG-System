@@ -1,3 +1,4 @@
+
 from services.vector_search_service import search_similar_chunks
 from services.llm_service import generate_answer
 from services.message_service import get_conversation_messages
@@ -6,22 +7,21 @@ from services.message_service import get_conversation_messages
 def answer_question(
     question: str,
     user_id: str,
-    conversation_id: str,
-    document_id: str
+    conversation_id: str
 ) -> dict:
 
-    # Step 1: Retrieve relevant document chunks
+    # Step 1: Retrieve relevant chunks
+    # from all documents in this conversation
     results = search_similar_chunks(
         query=question,
         user_id=user_id,
         conversation_id=conversation_id,
-        document_id=document_id,
-        limit=3
+        limit=5
     )
 
     if not results:
         return {
-            "answer": "I could not find the answer in the uploaded document.",
+            "answer": "I could not find the answer in the uploaded documents.",
             "sources": []
         }
 
@@ -30,6 +30,7 @@ def answer_question(
 
     for result in results:
         context_parts.append(
+            f"[Document: {result['document_name']}]\n"
             f"[Chunk {result['chunk_index']}]\n"
             f"{result['text']}"
         )
@@ -63,16 +64,25 @@ def answer_question(
         conversation_history=conversation_history
     )
 
-    # Step 6: Prepare source information
-    sources = [
-        {
-            "document_id": result["document_id"],
+    # Step 6: Prepare unique source information
+    sources = []
+    seen_documents = set()
+
+    for result in results:
+        document_id = result["document_id"]
+
+        # Show each document only once in the frontend
+        if document_id in seen_documents:
+            continue
+
+        seen_documents.add(document_id)
+
+        sources.append({
+            "document_id": document_id,
             "document_name": result["document_name"],
             "chunk_index": result["chunk_index"],
             "score": result["score"]
-        }
-        for result in results
-    ]
+        })
 
     return {
         "answer": answer,

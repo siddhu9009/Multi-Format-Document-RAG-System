@@ -1,5 +1,6 @@
 const API_BASE_URL = "http://127.0.0.1:8000";
 
+
 export async function registerUser(userData) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
@@ -60,6 +61,7 @@ export async function getCurrentUser() {
 
   return data;
 }
+
 
 export async function getConversations() {
   const token = localStorage.getItem("access_token");
@@ -139,6 +141,7 @@ export async function getMessages(conversationId) {
   return data;
 }
 
+
 export async function uploadDocument(
   conversationId,
   file
@@ -173,12 +176,10 @@ export async function uploadDocument(
   return data;
 }
 
- 
 
 export async function sendChatMessage(
   question,
-  conversationId,
-  documentId
+  conversationId
 ) {
   const token = localStorage.getItem("access_token");
 
@@ -193,7 +194,6 @@ export async function sendChatMessage(
       body: JSON.stringify({
         question,
         conversation_id: conversationId,
-        document_id: documentId,
       }),
     }
   );
@@ -234,3 +234,28 @@ export async function getDocuments() {
   return data;
 }
 
+export async function deleteConversation(
+  conversationId
+) {
+  const token = localStorage.getItem("access_token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/conversations/${conversationId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Failed to delete conversation"
+    );
+  }
+
+  return data;
+}

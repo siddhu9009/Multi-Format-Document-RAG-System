@@ -9,8 +9,7 @@ def search_similar_chunks(
     query: str,
     user_id: str,
     conversation_id: str,
-    document_id: str,
-    limit: int = 3
+    limit: int = 5
 ):
 
     query_embedding = create_embedding(query)
@@ -21,12 +20,11 @@ def search_similar_chunks(
                 "index": "vector_index",
                 "path": "embedding",
                 "queryVector": query_embedding,
-                "numCandidates": 20,
+                "numCandidates": 50,
                 "limit": limit,
                 "filter": {
                     "user_id": user_id,
-                    "conversation_id": conversation_id,
-                    "document_id": document_id
+                    "conversation_id": conversation_id
                 }
             }
         },

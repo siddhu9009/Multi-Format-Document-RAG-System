@@ -1,4 +1,3 @@
-
 from fastapi import (
     APIRouter,
     UploadFile,
@@ -41,14 +40,27 @@ async def upload_document(
             detail="You do not have access to this conversation"
         )
 
-    allowed_types = [".pdf", ".docx"]
+    # Supported file types
+    allowed_types = [
+        ".pdf",
+        ".docx",
+        ".txt",
+        ".md",
+        ".csv",
+        ".json",
+        ".xlsx",
+        ".pptx"
+    ]
 
     file_extension = Path(file.filename).suffix.lower()
 
     if file_extension not in allowed_types:
         raise HTTPException(
             status_code=400,
-            detail="Only PDF and DOCX files are supported"
+            detail=(
+                "Unsupported file type. "
+                "Supported formats: PDF, DOCX, TXT, MD, CSV, JSON, XLSX and PPTX."
+            )
         )
 
     # Keep only the filename
@@ -102,4 +114,3 @@ async def upload_document(
             status_code=500,
             detail=f"Document processing failed: {str(e)}"
         )
-
