@@ -31,7 +31,7 @@ The system combines **FastAPI, React, MongoDB Atlas Vector Search, FastEmbed, an
 
 
 ## 🧠 How It Works
-
+```text
 
 User
  │
@@ -64,7 +64,7 @@ Groq LLM
  ▼
 Grounded Answer + Sources
 
-
+text```
 
 | Layer               | Technologies                              |
 | ------------------- | ----------------------------------------- |
