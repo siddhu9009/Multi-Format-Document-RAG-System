@@ -16,7 +16,7 @@ MongoDB is used for:
 
 The database also uses **MongoDB Atlas Vector Search** to retrieve document chunks that are semantically relevant to a user's question.
 
----
+--
 
 # 2. Database
 
