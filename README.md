@@ -32,7 +32,7 @@ The system combines **FastAPI, React, MongoDB Atlas Vector Search, FastEmbed, an
 
 ## 🧠 How It Works
 
-```text
+
 User
  │
  ▼
