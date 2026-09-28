@@ -64,7 +64,7 @@ Groq LLM
  ▼
 Grounded Answer + Sources
 
-text```
+---
 
 | Layer               | Technologies                              |
 | ------------------- | ----------------------------------------- |
