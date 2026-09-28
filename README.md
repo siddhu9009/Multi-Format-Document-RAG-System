@@ -80,7 +80,7 @@ Grounded Answer + Sources
 | Version Control     | Git, GitHub                               |
 
 
-* **## ⚙️ Local Setup #***
+**## ⚙️ Local Setup #**
 
 1. Clone the repository
 git clone https://github.com/siddhu9009/multi-format-document-rag.git
