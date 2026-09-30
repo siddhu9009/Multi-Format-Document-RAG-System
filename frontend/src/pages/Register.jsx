@@ -39,13 +39,8 @@ function Register({ onLogin }) {
 
         <div className="auth-header">
           <div className="auth-logo">
-            <svg width="18" height="22" viewBox="0 0 16 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">
-              <path d="M1.5 3A1.5 1.5 0 013 1.5h6.5L14.5 6v11A1.5 1.5 0 0113 18.5H3A1.5 1.5 0 011.5 17V3z" />
-              <path d="M9.5 1.5V6h5" strokeLinecap="round" />
-              <line x1="4.5" y1="10.5" x2="11" y2="10.5" strokeWidth="1" opacity=".4" strokeLinecap="round" />
-              <line x1="4.5" y1="13.5" x2="9" y2="13.5" strokeWidth="1" opacity=".4" strokeLinecap="round" />
-            </svg>
-          </div>
+            <img src="/logo.png" alt="Document AI logo" />
+        </div>
 
           <h1>Create your workspace</h1>
 
