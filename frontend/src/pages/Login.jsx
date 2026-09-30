@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,6 +7,9 @@ function Login({ onRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -16,13 +18,16 @@ function Login({ onRegister }) {
 
     setMessage("");
     setError("");
+    setLoading(true);
 
     try {
       await login(email, password);
 
       setMessage("Login successful");
     } catch (error) {
-      setError(error.message);
+      setError(error.message || "Unable to sign in. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -30,30 +35,34 @@ function Login({ onRegister }) {
     <div className="auth-page">
       <div className="auth-card">
 
+        {/* Logo + Header */}
         <div className="auth-header">
+
           <div className="auth-logo">
-            <svg width="18" height="22" viewBox="0 0 16 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">
-              <path d="M1.5 3A1.5 1.5 0 013 1.5h6.5L14.5 6v11A1.5 1.5 0 0113 18.5H3A1.5 1.5 0 011.5 17V3z" />
-              <path d="M9.5 1.5V6h5" strokeLinecap="round" />
-              <line x1="4.5" y1="10.5" x2="11" y2="10.5" strokeWidth="1" opacity=".4" strokeLinecap="round" />
-              <line x1="4.5" y1="13.5" x2="9" y2="13.5" strokeWidth="1" opacity=".4" strokeLinecap="round" />
-            </svg>
+            {/* Replace logo.png with your final logo */}
+            <img
+              src="/logo.png"
+              alt="Document AI"
+            />
+          </div>
+
+          <div className="auth-brand">
+            <span>Document AI</span>
           </div>
 
           <h1>Welcome back</h1>
 
           <p>
-            Sign in to your document workspace.
+            Sign in to continue working with your documents.
           </p>
         </div>
 
-        <form
-          className="auth-form"
-          onSubmit={handleLogin}
-        >
+        {/* Login Form */}
+        <form className="auth-form" onSubmit={handleLogin}>
+
           <div className="form-group">
             <label htmlFor="login-email">
-              Email
+              Email address
             </label>
 
             <input
@@ -61,38 +70,56 @@ function Login({ onRegister }) {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(event) =>
-                setEmail(event.target.value)
-              }
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">
-              Password
-            </label>
+            <div className="form-label-row">
+              <label htmlFor="login-password">
+                Password
+              </label>
+            </div>
 
-            <input
-              id="login-password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(event) =>
-                setPassword(event.target.value)
-              }
-              required
-            />
+            <div className="password-input-wrapper">
+              <input
+                id="login-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           <button
             className="auth-button"
             type="submit"
+            disabled={loading}
           >
-            Continue to workspace
+            {loading ? "Signing in..." : "Continue to workspace"}
           </button>
+
         </form>
 
+        {/* Status Messages */}
         {message && (
           <p className="success-message">
             {message}
@@ -105,10 +132,9 @@ function Login({ onRegister }) {
           </p>
         )}
 
+        {/* Register */}
         <div className="auth-switch">
-          <span>
-            Don't have an account?
-          </span>
+          <span>Don't have an account?</span>
 
           <button
             type="button"
@@ -117,6 +143,12 @@ function Login({ onRegister }) {
           >
             Create account
           </button>
+        </div>
+
+        {/* Security Note */}
+        <div className="auth-security">
+          <span className="security-dot"></span>
+          Your documents and conversations are private to your account.
         </div>
 
       </div>
